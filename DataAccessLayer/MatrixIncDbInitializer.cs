@@ -48,9 +48,9 @@ namespace DataAccessLayer
 
             var parts = new Part[]
             {
-                new Part { Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", ImageURL = "https://static.vecteezy.com/system/resources/previews/009/588/932/non_2x/gear-wheel-transparent-free-png.png"},
+                new Part { Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", ImageURL = "https://media.hornbach.nl/hb/packshot/as.46555900.jpg"},
                 new Part { Name = "M5 Boutje", Description = "Bevestiging van panelen, buizen of interne modules", ImageURL = "https://ijzershop.nl/1739/verzinkte-zeskantbout-m5-x-70.jpg"},
-                new Part { Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen", ImageURL = "https://www.hydrauliek24.nl//Files/6/85000/85837/ProductPhotos/1000x525/420178570.jpg"},
+                new Part { Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen", ImageURL = "https://hytres.com/wp-content/uploads/d3220200c-1.jpg"},
                 new Part { Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen.", ImageURL = "https://www.hogetex.com/media/catalog/product/cache/abe8e32530358e970f9de6550ae2191b/H/G/HGTC2545_28717_1_2.jpg"}
             };
             context.Parts.AddRange(parts);

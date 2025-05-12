@@ -8,21 +8,34 @@ namespace KE03_INTDEV_SE_1_Base.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IPartRepository _partsRepository;
 
-        public IList<Customer> Customers { get; set; }
+        public IList<Part> Parts { get; set; } = new List<Part>();
 
-        public IndexModel(ILogger<IndexModel> logger, ICustomerRepository customerRepository)
+        [BindProperty(SupportsGet = true)] public string? SearchTerm { get; set; }
+
+        public IndexModel(ILogger<IndexModel> logger, IPartRepository partsRepository)
         {
             _logger = logger;
-            _customerRepository = customerRepository;
-            Customers = new List<Customer>();
+            _partsRepository = partsRepository;
         }
 
         public void OnGet()
-        {            
-            Customers = _customerRepository.GetAllCustomers().ToList();                            
-            _logger.LogInformation($"getting all {Customers.Count} customers");
+        {
+            var allParts = _partsRepository.GetAllParts();
+
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                Parts = allParts
+                    .Where(p => p.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                _logger.LogInformation($"Filtered parts count: {Parts.Count} using searchTerm: '{SearchTerm}'");
+            }
+            else
+            {
+                Parts = allParts.ToList();
+                _logger.LogInformation($"Getting all {Parts.Count} parts.");
+            }
         }
     }
 }

@@ -1,0 +1,60 @@
+@page
+@model OrderModel
+@{
+    ViewData["Title"] = "Order Summary";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Order Summary</h2>
+
+    @if (Model.GroupedCartItems.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.GroupedCartItems)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="@item.Part.ImageURL" alt="@item.Part.Name" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: contain;" />
+                                        <div>
+                                            <h6 class="mb-0">@item.Part.Name</h6>
+                                            <small class="text-muted">@item.Part.Description</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end">€ @item.Part.Price</td>
+                                <td class="text-end fw-bold">€ @System.Math.Round((item.Part.Price * item.Quantity), 2)</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td class="text-end fw-bold">€ @(Model.TotalPrice)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <form method="post" asp-page-handler="PlaceOrder">
+                    <button type="submit" class="btn btn-success float-end">Place Order</button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Your cart is empty. Please add items before placing an order.</div>
+    }
+</div>

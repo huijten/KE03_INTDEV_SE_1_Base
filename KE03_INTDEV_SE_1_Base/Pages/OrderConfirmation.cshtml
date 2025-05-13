@@ -1,0 +1,17 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.OrderConfirmation
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-success">
+        <h4 class="alert-heading">Thank you!</h4>
+        <p>Your order has been placed successfully.</p>
+        <hr />
+        <form method="post" asp-page-handler="ReturnHome">
+            <button type="submit" class="btn btn-primary">Return to Home</button>
+        </form>
+    </div>
+</div>

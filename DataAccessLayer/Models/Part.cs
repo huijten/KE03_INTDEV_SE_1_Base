@@ -15,7 +15,8 @@ namespace DataAccessLayer.Models
         public string Description { get; set; }
         
         public string ImageURL { get; set; }
+        
+        public double Price { get; set; }
 
-        public ICollection<Product> Products { get; } = new List<Product>();
     }
 }

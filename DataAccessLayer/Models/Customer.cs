@@ -18,9 +18,9 @@ namespace DataAccessLayer.Models
 
         [Required]
         public string Address { get; set; }
-
-        public bool Active { get; set; }
-
+        [Required]
+        public string Email { get; set; }
+        
         public ICollection<Order> Orders { get; } = new List<Order>();
     }
 }

@@ -16,16 +16,10 @@ namespace DataAccessLayer
             {
                 return;   // DB has been seeded
             }
-
-            // TODO: Hier moet ik nog wat namen verzinnen die betrekking hebben op de matrix.
-            // - Denk aan de m3 boutjes, moertjes en ringetjes.
-            // - Denk aan namen van schepen
-            // - Denk aan namen van vliegtuigen            
+            
             var customers = new Customer[]
             {
-                new Customer { Name = "Neo", Address = "123 Elm St" , Active=true},
-                new Customer { Name = "Morpheus", Address = "456 Oak St", Active = true },
-                new Customer { Name = "Trinity", Address = "789 Pine St", Active = true }
+                new Customer { Name = "Kevin", Email = "kevinhuijten@gmail.com", Address = "Heerlen"},
             };
             context.Customers.AddRange(customers);
 
@@ -33,25 +27,18 @@ namespace DataAccessLayer
             {
                 new Order { Customer = customers[0], OrderDate = DateTime.Parse("2021-01-01")},
                 new Order { Customer = customers[0], OrderDate = DateTime.Parse("2021-02-01")},
-                new Order { Customer = customers[1], OrderDate = DateTime.Parse("2021-02-01")},
-                new Order { Customer = customers[2], OrderDate = DateTime.Parse("2021-03-01")}
+                new Order { Customer = customers[0], OrderDate = DateTime.Parse("2021-02-01")},
+                new Order { Customer = customers[0], OrderDate = DateTime.Parse("2021-03-01")}
             };  
             context.Orders.AddRange(orders);
-
-            var products = new Product[]
-            {
-                new Product { Name = "Nebuchadnezzar", Description = "Het schip waarop Neo voor het eerst de echte wereld leert kennen", Price = 10000.00m },
-                new Product { Name = "Jack-in Chair", Description = "Stoel met een rugsteun en metalen armen waarin mensen zitten om ingeplugd te worden in de Matrix via een kabel in de nekpoort", Price = 500.50m },
-                new Product { Name = "EMP (Electro-Magnetic Pulse) Device", Description = "Wapentuig op de schepen van Zion", Price = 129.99m }
-            };
-            context.Products.AddRange(products);
+            
 
             var parts = new Part[]
             {
-                new Part { Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", ImageURL = "https://media.hornbach.nl/hb/packshot/as.46555900.jpg"},
-                new Part { Name = "M5 Boutje", Description = "Bevestiging van panelen, buizen of interne modules", ImageURL = "https://ijzershop.nl/1739/verzinkte-zeskantbout-m5-x-70.jpg"},
-                new Part { Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen", ImageURL = "https://hytres.com/wp-content/uploads/d3220200c-1.jpg"},
-                new Part { Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen.", ImageURL = "https://www.hogetex.com/media/catalog/product/cache/abe8e32530358e970f9de6550ae2191b/H/G/HGTC2545_28717_1_2.jpg"}
+                new Part { Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", ImageURL = "https://media.hornbach.nl/hb/packshot/as.46555900.jpg", Price = 4.95},
+                new Part { Name = "M5 Boutje", Description = "Bevestiging van panelen, buizen of interne modules", ImageURL = "https://ijzershop.nl/1739/verzinkte-zeskantbout-m5-x-70.jpg", Price = 5.50},
+                new Part { Name = "Hydraulische cilinder", Description = "Openen/sluiten van zware luchtsluizen of bewegende onderdelen", ImageURL = "https://hytres.com/wp-content/uploads/d3220200c-1.jpg", Price = 9.95},
+                new Part { Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen.", ImageURL = "https://www.hogetex.com/media/catalog/product/cache/abe8e32530358e970f9de6550ae2191b/H/G/HGTC2545_28717_1_2.jpg", Price = 18.50}
             };
             context.Parts.AddRange(parts);
 

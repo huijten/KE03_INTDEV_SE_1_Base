@@ -1,103 +1,125 @@
-﻿<!DOCTYPE html>
+﻿@using System.Text.Json
+@inject DataAccessLayer.Interfaces.IPartRepository PartRepository
+
+@{
+    // Deserialize the part IDs from TempData
+    var partIdsJson = TempData["CartPartIds"] as string;
+    var partIds = string.IsNullOrEmpty(partIdsJson)
+        ? new List<int>()
+        : JsonSerializer.Deserialize<List<int>>(partIdsJson);
+
+    TempData.Keep("CartPartIds");
+
+    // Fetch the part data from the repository
+    var parts = new List<DataAccessLayer.Models.Part>();
+    foreach (var id in partIds)
+    {
+        var part = PartRepository.GetPartById(id);  // Fetch part by ID
+        if (part != null)
+        {
+            parts.Add(part);  // Add part to the list if found
+        }
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Matrix Inc.</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/KE03_INTDEV_SE_1_Base.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/KE03_INTDEV_SE_1_Base.styles.css" asp-append-version="true"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Matrix Inc.</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index">Matrix Inc.</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <div class="dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" href="#" id="cartDropDown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-cart"></i> Cart
+                        </a>
                         
-                        <div class="dropdown">
-    <a class="nav-link text-dark dropdown-toggle" href="#" id="cartDropDown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-cart"></i> Cart
-    </a>
-    <ul class="dropdown-menu p-3" aria-labelledby="cartDropDown" style="width: 300px; left: -30px; padding-right: 15px;">
-        <!-- Cart item 1 -->
-        <li class="cart-item d-flex align-items-center mb-3">
-            <img src="https://media.hornbach.nl/hb/packshot/as.46555900.jpg" alt="Item 3" class="item-image rounded-circle w-25">
-            <div class="ms-3 text-wrap">
-                <span class="item-name fw-bold text-truncate" style="max-width: 200px;">Tandwiel</span>
-                <div class="item-price text-muted">$5.00</div>
-            </div>
-        </li>
+                        <ul class="dropdown-menu p-3" aria-labelledby="cartDropDown" style="width: 300px; left: -30px; padding-right: 15px; max-height: 400px; overflow-y: auto;">
+                            @if (parts.Count > 0)
+                            {
+                                var groupedParts = parts.GroupBy(part => part.Id) // Group parts by their unique Id (or Name)
+                                    .Select(group => new 
+                                    {
+                                        Part = group.First(),
+                                        Quantity = group.Count()
+                                    });
 
-        <!-- Cart item 2 -->
-        <li class="cart-item d-flex align-items-center mb-3">
-            <img src="https://ijzershop.nl/1739/verzinkte-zeskantbout-m5-x-70.jpg" alt="Item 3" class="item-image rounded-circle w-25">
-            <div class="ms-3 text-wrap">
-                <span class="item-name fw-bold text-truncate" style="max-width: 200px;">M5 Boutje</span>
-                <div class="item-price text-muted">$10.00</div>
-            </div>
-        </li>
+                                foreach (var group in groupedParts)
+                                {
+                                    <li class="cart-item d-flex align-items-center mb-3">
+                                        <img src="@group.Part.ImageURL" alt="Item @group.Part.Id" class="item-image rounded-circle w-25">
+                                        <div class="ms-3 text-wrap">
+                                            <span class="item-name fw-bold text-truncate" style="max-width: 200px;">@group.Part.Name</span>
+                                            <div class="item-price text-muted">€ @group.Part.Price</div>
+                                            <div class="item-quantity text-muted">Quantity: @group.Quantity</div>
+                                        </div>
+                                    </li>
+                                }
 
-        <!-- Cart item 3 -->
-        <li class="cart-item d-flex align-items-center mb-3">
-            <img src="https://www.hogetex.com/media/catalog/product/cache/abe8e32530358e970f9de6550ae2191b/H/G/HGTC2545_28717_1_2.jpg" alt="Item 3" class="item-image rounded-circle w-25">
-            <div class="ms-3 text-wrap">
-                <span class="item-name fw-bold text-truncate" style="max-width: 200px;">Koelvloeistofpomp</span>
-                <div class="item-price text-muted">$5.00</div>
-            </div>
-        </li>
+                                <li class="cart-total mb-3">
+                                    <hr class="my-2">
+                                    <strong>Total Price: €@Math.Round(parts.Sum(part => part.Price), 2)</strong>
+                                </li>
 
-        <!-- Cart total -->
-        <li class="cart-total mb-3">
-            <hr class="my-2">
-            <strong>Total: $60.00</strong>
-        </li>
+                                <li class="checkout-btn">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary w-100">Checkout</button>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="text-muted">Your cart is empty.</li>
+                            }
+                        </ul>
 
-        <!-- Checkout button -->
-        <li class="checkout-btn">
-            <div class="d-grid">
-                <button class="btn btn-primary w-100">Checkout</button>
+                        
+                    </div>
+
+                    <div class="dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Kevin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/account-settings">Account Settings</a></li>
+                            <li><a class="dropdown-item" href="/order-history">Order History</a></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </ul>
             </div>
-        </li>
-    </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
 </div>
 
-                        
-                        
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
-                        <div class="dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> Kevin
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/account-settings">Account Settings</a></li>
-                                <li><a class="dropdown-item" href="/order-history">Order History</a></li>
-                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                            </ul>
-                        </div>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

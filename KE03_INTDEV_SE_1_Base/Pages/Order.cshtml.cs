@@ -9,12 +9,13 @@ namespace KE03_INTDEV_SE_1_Base.Pages
     public class OrderModel : PageModel
     {
         private readonly IPartRepository _partRepository;
-        private readonly ILogger<OrderModel> _logger;
-
-        public OrderModel(IPartRepository partRepository, ILogger<OrderModel> logger)
+        private readonly IOrderRepository _orderRepository;
+        private readonly ICustomerRepository _customerRepository;
+        public OrderModel(IPartRepository partRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository)
         {
             _partRepository = partRepository;
-            _logger = logger;
+            _orderRepository = orderRepository;
+            _customerRepository = customerRepository;
         }
 
         public List<(Part Part, int Quantity)> GroupedCartItems { get; set; } = new();
@@ -33,11 +34,21 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             {
                 return RedirectToPage("/Index");
             }
+            
+            Order order = new Order
+            {
+                CustomerId = 1,
+                Customer = _customerRepository.GetCustomerById(1),
+                OrderDate = DateTime.Now
+            };
 
-            // Here you would typically save the order to the database, send a confirmation email, etc.
-            _logger.LogInformation("Order placed with {Count} items and total €{Total}", GroupedCartItems.Count, TotalPrice);
+            foreach (var item in GroupedCartItems)
+            {
+                order.Parts.Add(item.Part); 
+            }
 
-            TempData.Remove("CartPartIds");
+            _orderRepository.AddOrder(order);
+            Console.Write(order);
 
             return RedirectToPage("OrderConfirmation");
         }

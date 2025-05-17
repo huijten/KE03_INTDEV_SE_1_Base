@@ -20,6 +20,7 @@ namespace DataAccessLayer.Repositories
 
         public void AddOrder(Order order)
         {
+            Console.Write("test1");
             _context.Orders.Add(order);
             _context.SaveChanges();
         }

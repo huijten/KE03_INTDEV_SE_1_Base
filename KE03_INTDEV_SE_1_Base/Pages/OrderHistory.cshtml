@@ -1,60 +1,69 @@
 @page
-@model OrderModel
+@model KE03_INTDEV_SE_1_Base.Pages.OrderHistoryModel
 @{
-    ViewData["Title"] = "Order Summary";
+    ViewData["Title"] = "Order History";
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4">Order Summary</h2>
+    <h2 class="mb-4">Order History</h2>
 
-    @if (Model.GroupedCartItems.Any())
+    @if (Model.CustomerOrders != null && Model.CustomerOrders.Any())
     {
-        <div class="row">
-            <div class="col-12">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Item</th>
-                            <th class="text-center">Quantity</th>
-                            <th class="text-end">Price</th>
-                            <th class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.GroupedCartItems)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="@item.Part.ImageURL" alt="@item.Part.Name" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: contain;" />
-                                        <div>
-                                            <h6 class="mb-0">@item.Part.Name</h6>
-                                            <small class="text-muted">@item.Part.Description</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="text-center">@item.Quantity</td>
-                                <td class="text-end">€ @item.Part.Price</td>
-                                <td class="text-end fw-bold">€ @Math.Round((item.Part.Price * item.Quantity), 2)</td>
-                            </tr>
-                        }
-                    </tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-end fw-bold">€ @Math.Round((Model.TotalPrice), 2)</td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <form method="post" asp-page-handler="PlaceOrder">
-                    <button type="submit" class="btn btn-success float-end">Place Order</button>
-                </form>
+        @foreach (var order in Model.CustomerOrders.OrderByDescending(o => o.OrderDate))
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Order #@order.Id</h5>
+                    <small class="text-muted">Order Date: @order.OrderDate.ToShortDateString()</small>
+                </div>
+                <div class="card-body">
+                    @if (order.Parts != null && order.Parts.Any())
+                    {
+                        <table class="table table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="text-end">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var part in order.Parts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@part.ImageURL" alt="@part.Name" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: contain;" />
+                                                <div>
+                                                    <h6 class="mb-0">@part.Name</h6>
+                                                    <small class="text-muted">@part.Description</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">€ @part.Price</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td class="text-end"><strong>Order Total:</strong></td>
+                                    @{
+                                        var orderTotal = order.Parts.Sum(p => p.Price);
+                                    }
+                                    <td class="text-end fw-bold">€ @Math.Round(orderTotal, 2)</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No items found for this order.</p>
+                    }
+                </div>
             </div>
-        </div>
+        }
     }
     else
     {
-        <div class="alert alert-info">Your cart is empty. Please add items before placing an order.</div>
+        <div class="alert alert-info">You have no past orders.</div>
     }
 </div>

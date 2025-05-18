@@ -18,9 +18,13 @@ namespace DataAccessLayer
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Orders)
                 .WithOne(o => o.Customer)
-                .HasForeignKey(o => o.CustomerId).IsRequired();
+                .HasForeignKey(o => o.CustomerId)
+                .IsRequired(); // An Order must always have a Customer
             
-
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Parts)
+                .WithMany();
+            
             base.OnModelCreating(modelBuilder);
         }
     }

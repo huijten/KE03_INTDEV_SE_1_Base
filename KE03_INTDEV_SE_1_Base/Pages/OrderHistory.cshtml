@@ -11,53 +11,78 @@
     {
         @foreach (var order in Model.CustomerOrders.OrderByDescending(o => o.OrderDate))
         {
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Order #@order.Id</h5>
-                    <small class="text-muted">Order Date: @order.OrderDate.ToShortDateString()</small>
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-light p-0">
+                    <button class="btn btn-link w-100 text-start d-flex justify-content-between align-items-center p-3 text-decoration-none text-dark"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#orderCollapse_@order.Id"
+                            aria-expanded="false"
+                            aria-controls="orderCollapse_@order.Id">
+                        <h5 class="mb-0">Order #@order.Id</h5>
+                        <small class="text-muted">Order Date: @order.OrderDate.ToShortDateString()
+                            <i class="fas fa-chevron-down ms-2"></i>
+                        </small>
+                    </button>
                 </div>
-                <div class="card-body">
-                    @if (order.Parts != null && order.Parts.Any())
-                    {
-                        <table class="table table-bordered align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Item</th>
-                                    <th class="text-end">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var part in order.Parts)
-                                {
+                <div class="collapse" id="orderCollapse_@order.Id">
+                    <div class="card-body">
+                        @if (order.Parts != null && order.Parts.Any())
+                        {
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <img src="@part.ImageURL" alt="@part.Name" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: contain;" />
-                                                <div>
-                                                    <h6 class="mb-0">@part.Name</h6>
-                                                    <small class="text-muted">@part.Description</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-end">€ @part.Price</td>
+                                        <th>Item</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Line Total</th>
                                     </tr>
-                                }
-                            </tbody>
-                            <tfoot class="table-light">
-                                <tr>
-                                    <td class="text-end"><strong>Order Total:</strong></td>
+                                </thead>
+                                <tbody>
                                     @{
-                                        var orderTotal = order.Parts.Sum(p => p.Price);
+                                        var groupedParts = order.Parts
+                                            .GroupBy(p => p.Id)
+                                            .Select(g => new {
+                                                Part = g.First(),
+                                                Quantity = g.Count(),
+                                                LineTotal = g.Sum(p => p.Price)
+                                            })
+                                            .ToList();
                                     }
-                                    <td class="text-end fw-bold">€ @Math.Round(orderTotal, 2)</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No items found for this order.</p>
-                    }
+                                    @foreach (var groupedPart in groupedParts)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@groupedPart.Part.ImageURL" alt="@groupedPart.Part.Name" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: contain;" />
+                                                    <div>
+                                                        <h6 class="mb-0">@groupedPart.Part.Name</h6>
+                                                        <small class="text-muted">@groupedPart.Part.Description</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@groupedPart.Quantity</td>
+                                            <td class="text-end">€ @groupedPart.Part.Price</td>
+                                            <td class="text-end fw-bold">€ @Math.Round(groupedPart.LineTotal, 2)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Order Total:</strong></td>
+                                        @{
+                                            var orderTotal = groupedParts.Sum(gp => gp.LineTotal);
+                                        }
+                                        <td class="text-end fw-bold">€ @Math.Round(orderTotal, 2)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No items found for this order.</p>
+                        }
+                    </div>
                 </div>
             </div>
         }
@@ -67,3 +92,28 @@
         <div class="alert alert-info">You have no past orders.</div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var collapseToggles = document.querySelectorAll('[data-bs-toggle="collapse"]');
+            collapseToggles.forEach(function (toggle) {
+                toggle.addEventListener('click', function () {
+                    var icon = this.querySelector('.fas.fa-chevron-down');
+                    if (icon) {
+                        icon.classList.toggle('rotate');
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        .fa-chevron-down {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .fa-chevron-down.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+}

@@ -9,15 +9,20 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class OrderHistoryModel : PageModel
     {
+        #region Dependency Injection
         private readonly IOrderRepository _orderRepository;
 
         public OrderHistoryModel(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
         }
-
+        #endregion
+        
+        #region Properties
         public IEnumerable<Order> CustomerOrders { get; set; } = new List<Order>();
-
+        #endregion
+        
+        #region GET request method
         public void OnGet()
         {
             int customerId = 1;
@@ -26,5 +31,6 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 .Where(o => o.CustomerId == customerId)
                 .ToList();
         }
+        #endregion
     }
 }

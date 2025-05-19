@@ -8,6 +8,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class OrderModel : PageModel
     {
+        #region Dependency Injection
         private readonly IPartRepository _partRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -17,15 +18,21 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             _orderRepository = orderRepository;
             _customerRepository = customerRepository;
         }
-
+        #endregion
+        
+        #region Properties
         public List<(Part Part, int Quantity)> GroupedCartItems { get; set; } = new();
         public double TotalPrice => GroupedCartItems.Sum(item => item.Part.Price * item.Quantity);
-
+        #endregion
+        
+        #region GET request method
         public void OnGet()
         {
             LoadCart();
         }
+        #endregion
 
+        #region POST request method
         public IActionResult OnPostPlaceOrder()
         {
             LoadCart();
@@ -52,7 +59,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 
             return RedirectToPage("OrderConfirmation");
         }
-
+        #endregion
+        
+        #region Load shopping cart method
         private void LoadCart()
         {
             var partIdsJson = TempData["CartPartIds"] as string;
@@ -77,5 +86,6 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 GroupedCartItems = grouped;
             }
         }
+        #endregion
     }
 }

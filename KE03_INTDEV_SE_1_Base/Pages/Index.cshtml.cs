@@ -8,21 +8,26 @@ namespace KE03_INTDEV_SE_1_Base.Pages
 {
     public class IndexModel : PageModel
     {
+        #region Dependency Injection
         private readonly ILogger<IndexModel> _logger;
         private readonly IPartRepository _partsRepository;
-
-        public IList<Part> Parts { get; set; } = new List<Part>();
         
-        public static List<(int PartId, int Quantity)> Cart = new();
-
-        [BindProperty(SupportsGet = true)] public string? SearchTerm { get; set; }
-
         public IndexModel(ILogger<IndexModel> logger, IPartRepository partsRepository)
         {
             _logger = logger;
             _partsRepository = partsRepository;
         }
+        #endregion
+        
+        #region Properties
+        public IList<Part> Parts { get; set; } = new List<Part>();
+        
+        public static List<(int PartId, int Quantity)> Cart = new();
 
+        [BindProperty(SupportsGet = true)] public string? SearchTerm { get; set; }
+        #endregion
+        
+        #region GET request method
         public void OnGet()
         {
             var allParts = _partsRepository.GetAllParts();
@@ -40,7 +45,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages
                 _logger.LogInformation($"Getting all {Parts.Count} parts.");
             }
         }
-
+        #endregion
+        
+        #region POST request method
         public async Task<IActionResult> OnPostAddToCart(int partId, int quantity)
         {
             var partList = TempData.ContainsKey("CartPartIds")
@@ -53,5 +60,6 @@ namespace KE03_INTDEV_SE_1_Base.Pages
             TempData.Keep("CartPartIds");
             return RedirectToPage("Index");
         }
+        #endregion
     }
 }

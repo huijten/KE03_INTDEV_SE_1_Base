@@ -11,29 +11,31 @@ namespace KE03_INTDEV_SE_1_Base
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // We gebruiken voor nu even een SQLite voor de database,
-            // omdat deze eenvoudig lokaal te gebruiken is en geen extra configuratie nodig heeft.
+            #region Setup database
             builder.Services.AddDbContext<MatrixIncDbContext>(
                 options => options.UseSqlite("Data Source=MatrixInc.db"));
-
-            // We registreren de repositories in de DI container
+            #endregion
+            
+            #region Dependency Injection
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IPartRepository, PartRepository>();
-            
-            // Add services to the container.
             builder.Services.AddRazorPages();
+            #endregion
 
+            #region Configure services
             var app = builder.Build();
+            #endregion
 
-            // Configure the HTTP request pipeline.
+            #region Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            #endregion
 
+            #region Initialize database
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -42,7 +44,9 @@ namespace KE03_INTDEV_SE_1_Base
                 context.Database.EnsureCreated();
                 MatrixIncDbInitializer.Initialize(context);
             }
+            #endregion
 
+            #region Configure middleware
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -53,6 +57,7 @@ namespace KE03_INTDEV_SE_1_Base
             app.MapRazorPages();
 
             app.Run();
+            #endregion
         }
     }
 }

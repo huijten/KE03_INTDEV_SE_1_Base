@@ -5,14 +5,19 @@ namespace DataAccessLayer
 {
     public class MatrixIncDbContext : DbContext
     {
+        #region Initialize DbContext
         public MatrixIncDbContext(DbContextOptions<MatrixIncDbContext> options) : base(options)
         {
         }
-
+        #endregion
+        
+        #region Database sets
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Part> Parts { get; set; }
-
+        #endregion
+        
+        #region Model configuration
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Customer>()
@@ -27,5 +32,6 @@ namespace DataAccessLayer
             
             base.OnModelCreating(modelBuilder);
         }
+        #endregion
     }
 }

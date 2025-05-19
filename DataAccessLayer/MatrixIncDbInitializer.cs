@@ -11,21 +11,27 @@ namespace DataAccessLayer
     {
         public static void Initialize(MatrixIncDbContext context)
         {
+            #region Check if db exists
             context.Database.EnsureCreated();
-
-            // Look for any customers.
+            #endregion
+            
+            #region Check if db is seeded
             if (context.Customers.Any())
             {
                 return; 
             }
+            #endregion
             
+            #region Create customer and save changes
             var customers = new Customer[]
             {
                 new Customer { Name = "Kevin", Email = "kevinhuijten@gmail.com", Address = "Heerlen"},
             };
             context.Customers.AddRange(customers);
             context.SaveChanges(); 
+            #endregion
             
+            #region Create parts and save changes
             var parts = new Part[]
             {
                 new Part { Name = "Tandwiel", Description = "Overdracht van rotatie in bijvoorbeeld de motor of luikmechanismen", ImageURL = "https://media.hornbach.nl/hb/packshot/as.46555900.jpg", Price = 4.95},
@@ -34,9 +40,10 @@ namespace DataAccessLayer
                 new Part { Name = "Koelvloeistofpomp", Description = "Koeling van de motor of elektronische systemen.", ImageURL = "https://www.hogetex.com/media/catalog/product/cache/abe8e32530358e970f9de6550ae2191b/H/G/HGTC2545_28717_1_2.jpg", Price = 18.50},
             };
             context.Parts.AddRange(parts);
-  
             context.SaveChanges();
-
+            #endregion
+            
+            #region Create orders and save changes
             var orders = new Order[]
             {
                 new Order 
@@ -66,8 +73,8 @@ namespace DataAccessLayer
 
             };  
             context.Orders.AddRange(orders);
-            
             context.SaveChanges();
+            #endregion
         }
     }
 }

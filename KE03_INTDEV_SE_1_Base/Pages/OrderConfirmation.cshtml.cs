@@ -9,6 +9,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages;
 
 public class OrderConfirmation : PageModel
 {
+    #region Dependency Injection
     private readonly IPartRepository _partRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly ICustomerRepository _customerRepository;
@@ -19,15 +20,20 @@ public class OrderConfirmation : PageModel
         _customerRepository = customerRepository;
         _orderRepository = orderRepository;
     }
+    #endregion
 
+    #region GET request method
     public void OnGet()
     {
         List<int> partIds = TempData["CartPartIds"] as List<int>;
     }
-
+    #endregion
+    
+    #region POST request method
     public IActionResult OnPostReturnHome()
     {
         TempData.Remove("CartPartIds");
         return RedirectToPage("/Index");
     }
+    #endregion
 }
